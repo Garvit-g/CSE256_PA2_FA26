@@ -1,4 +1,4 @@
-# CSE 256 PA2: Transformer Blocks + Dissecting a Pretrained LLM
+# PA2 code
 
 - **Part 1:** a Transformer encoder trained jointly with a feedforward classifier to predict which politician gave a speech segment.
 - **Part 2:** a GPT-like word-level decoder pretrained on next-word prediction.
@@ -6,46 +6,44 @@
 
 All attention and Transformer code in Parts 1 and 2 is written from scratch in `transformer.py`; no library Transformer layers are used.
 
-## Requirements
+## How to run
 
-- Python 3.9 or later
-- PyTorch (a CPU is enough for Parts 1 and 2)
-- NLTK, with the `punkt_tab` tokenizer data, which the provided tokenizer uses
-- matplotlib
+### Setup (once)
 
 ```bash
-pip install torch nltk matplotlib
+pip install torch nltk matplotlib numpy
 python -c "import nltk; nltk.download('punkt_tab')"
 ```
 
-## Running Parts 1 and 2
+Python 3.9 or later. A CPU is enough for Parts 1 and 2. `punkt_tab` is the NLTK data the provided tokenizer uses.
 
-Run the commands from this directory, which contains `speechesdataset/`.
+### Parts 1 and 2
+
+Run the commands from this folder, which contains `speechesdataset/`:
 
 ```bash
-python main.py part1   # Part 1: encoder + classifier
-python main.py part2   # Part 2: decoder language model
+python main.py part1   # Part 1: encoder + classifier (about 2 min on a laptop CPU)
+python main.py part2   # Part 2: decoder language model (about 40 s)
 python main.py         # both parts
+python main.py > logs/main_output.txt   # both parts, output saved to a file (Windows: logs\main_output.txt)
 ```
 
-Both parts use the default hyperparameters from the starter `main.py`:
+The extra runs used in the report:
 
-- batch size 16, block size 32, learning rate 1e-3 (Adam)
-- n_embd 64, 2 heads, 4 layers
-- feedforward hidden size 100 inside every block
-- classifier 64 → 100 → 3, trained for 15 epochs
-- 500 language-model iterations, evaluated every 100
+```bash
+python main.py part1 --seed 1 --plot_dir plots_extra          # also seeds 2 and 3
+python main.py part1 --no_pad_mask --plot_dir plots_extra
+python main.py part1 --init default --plot_dir plots_extra
+python main.py part2 --seed 1 --plot_dir plots_extra          # also seeds 2 and 3
+python main.py part2 --init default --plot_dir plots_extra
+python data_stats.py
+```
 
-On a laptop CPU, Part 1 takes about 2 minutes of training and Part 2 about 40 seconds.
+The output of `python main.py` from the reported run is in `logs/main_output.txt`. The extra runs are next to it, in `logs/part1_*.txt`, `logs/part2_*.txt` and `logs/data_stats_output.txt`.
 
-The output of `python main.py` from the reported run is saved in `logs/main_output.txt`. The extra runs used in the report (other seeds, `--no_pad_mask`, `--init default`) are saved next to it, in `logs/part1_*.txt` and `logs/part2_*.txt`.
+### Part 3
 
-### What each part prints and saves
-
-| Part | Printed | Saved in `plots/` |
-|---|---|---|
-| 1 | Vocabulary size; encoder and classifier parameter counts; train loss, train accuracy and test accuracy after each of the 15 epochs; final test accuracy; per-head attention statistics on the test set; attention normalization checks | `part1_accuracy.png`; `part1_encoder_attention_s{1,2}.png` (all heads of all layers for two sentences); one map per head in `part1_encoder_attention_maps/` |
-| 2 | Size and `<unk>` rate of each evaluation set; decoder parameter count; train and test perplexity (Obama, W. Bush, H. W. Bush) at iterations 0, 100, …, 500; per-head attention statistics; attention normalization checks | `part2_perplexity.png`; `part2_decoder_attention_s{1,2}.png`; one map per head in `part2_decoder_attention_maps/` |
+Open `PA2_part3.ipynb` in Colab with a T4 GPU, upload `speechesdataset/test_LM_obama.txt` to `/content`, and choose *Runtime → Run all*.
 
 ### Options
 
@@ -57,6 +55,23 @@ The output of `python main.py` from the reported run is saved in `logs/main_outp
 | `--no_pad_mask` | off | Part 1 only: the encoder attends to padding and the mean includes padding positions (used for the comparison in the report) |
 | `--plot_dir` | `plots` | Where figures are saved |
 
+## Hyperparameters
+
+Both parts use the default hyperparameters from the starter `main.py`:
+
+- batch size 16, block size 32, learning rate 1e-3 (Adam)
+- n_embd 64, 2 heads, 4 layers
+- feedforward hidden size 100 inside every block
+- classifier 64 → 100 → 3, trained for 15 epochs
+- 500 language-model iterations, evaluated every 100
+
+## What each part prints and saves
+
+| Part | Printed | Saved in `plots/` |
+|---|---|---|
+| 1 | Vocabulary size; encoder and classifier parameter counts; train loss, train accuracy and test accuracy after each of the 15 epochs; final test accuracy; per-head attention statistics on the test set; attention normalization checks | `part1_accuracy.png`; `part1_encoder_attention_s{1,2}.png` (all heads of all layers for two sentences); one map per head in `part1_encoder_attention_maps/` |
+| 2 | Size and `<unk>` rate of each evaluation set; decoder parameter count; train and test perplexity (Obama, W. Bush, H. W. Bush) at iterations 0, 100, …, 500; per-head attention statistics; attention normalization checks | `part2_perplexity.png`; `part2_decoder_attention_s{1,2}.png`; one map per head in `part2_decoder_attention_maps/` |
+
 ## Files
 
 | File | Contents |
@@ -65,7 +80,8 @@ The output of `python main.py` from the reported run is saved in `logs/main_outp
 | `main.py` | Data loading, training loops for both parts, accuracy and perplexity evaluation, attention statistics, plots |
 | `utilities.py` | Provided attention sanity check (rows sum to 1), plus a combined plot of all heads with token labels |
 | `dataset.py`, `tokenizer.py` | Provided data classes and word-level tokenizer, with the small changes listed below |
-| `PA2_part3.ipynb` | Part 3: logit lens and layer transplants on Pythia-160M. It runs on its own, ideally on a Colab GPU; see the notebook's setup cell |
+| `data_stats.py` | Data statistics used in the Part 2 discussion (speaker attribution of the training text, unseen words, seen bigrams, unigram perplexity) |
+| `PA2_part3.ipynb` | Part 3: logit lens and layer transplants on Pythia-160M. It runs on its own, ideally on a Colab GPU |
 
 ## Changes to the starter code
 
