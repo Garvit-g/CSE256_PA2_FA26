@@ -1,0 +1,51 @@
+device: cpu, seed: 1, init: gpt2
+Loading data and creating tokenizer ...
+Vocabulary size is 5634
+
+======================================================================
+Part 1: Transformer encoder + feedforward classifier, trained jointly
+======================================================================
+2092 training and 750 test segments
+Padding is ignored (masked in attention and in the mean)
+Number of parameters: encoder 481,424, classifier 6,803, total 488,227
+Epoch  1: train loss 1.0680  train acc  48.47%  test acc  47.73%
+Epoch  2: train loss 0.7825  train acc  88.00%  test acc  77.60%
+Epoch  3: train loss 0.3540  train acc  96.13%  test acc  83.20%
+Epoch  4: train loss 0.1560  train acc  98.28%  test acc  86.27%
+Epoch  5: train loss 0.0880  train acc  97.94%  test acc  85.33%
+Epoch  6: train loss 0.0616  train acc  99.24%  test acc  86.67%
+Epoch  7: train loss 0.0409  train acc  99.09%  test acc  86.00%
+Epoch  8: train loss 0.0339  train acc  99.62%  test acc  87.73%
+Epoch  9: train loss 0.0268  train acc  99.52%  test acc  88.53%
+Epoch 10: train loss 0.0160  train acc  99.62%  test acc  87.60%
+Epoch 11: train loss 0.0128  train acc  99.62%  test acc  87.20%
+Epoch 12: train loss 0.0267  train acc  99.28%  test acc  86.80%
+Epoch 13: train loss 0.0454  train acc  96.85%  test acc  82.00%
+Epoch 14: train loss 0.0308  train acc  99.62%  test acc  89.07%
+Epoch 15: train loss 0.0245  train acc  99.57%  test acc  89.47%
+Training time: 101.1s
+Final test accuracy: 89.47%
+
+Attention statistics of the trained encoder on test_CLS.tsv:
+layer head  norm. entropy  max weight    self  previous   first
+    1    1          0.737       0.321   0.077     0.058   0.049
+    1    2          0.869       0.207   0.041     0.055   0.044
+    2    1          0.840       0.214   0.037     0.055   0.062
+    2    2          0.713       0.311   0.031     0.056   0.064
+    3    1          0.790       0.241   0.036     0.055   0.063
+    3    2          0.631       0.399   0.019     0.055   0.056
+    4    1          0.539       0.481   0.027     0.054   0.061
+    4    2          0.427       0.567   0.023     0.056   0.081
+(uniform attention over the visible keys would give entropy 1.000 and about 0.054 for each of the weight columns)
+
+Sanity check, sentence 1: 'It depends on us, on the choices we make, particularly at certain inflection points in history.'
+Input tensor shape: torch.Size([1, 32])
+Number of attention maps: 8
+Normalization test passed: every row of all 8 attention maps sums to 1
+Saved all heads of all layers to plots_extra\part1_encoder_attention_s1.png
+
+Sanity check, sentence 2: 'We will not tire, we will not falter, and we will not fail.'
+Input tensor shape: torch.Size([1, 32])
+Number of attention maps: 8
+Normalization test passed: every row of all 8 attention maps sums to 1
+Saved all heads of all layers to plots_extra\part1_encoder_attention_s2.png

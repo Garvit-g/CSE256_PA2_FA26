@@ -1,0 +1,10 @@
+train_LM.txt: 1553 lines; speaker of each line, matched against the labeled files:
+               Barack Obama: 612
+             George W. Bush: 0
+          George H. W. Bush: 425
+   not in the labeled files: 516
+
+          test set  tokens   <unk>  unseen in train_LM  bigrams seen  unigram ppl  lines in train_LM
+      Barack Obama    5549   1.93%               7.35%         53.2%        655.5              2/250
+    George W. Bush    4795   2.13%               9.41%         45.7%        735.1              0/250
+ George H. W. Bush    4778   2.13%               8.23%         51.5%        663.0              2/250

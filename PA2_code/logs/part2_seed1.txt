@@ -1,0 +1,51 @@
+device: cpu, seed: 1, init: gpt2
+Loading data and creating tokenizer ...
+Vocabulary size is 5634
+
+======================================================================
+Part 2: Decoder language model pretraining
+======================================================================
+ train:  32288 tokens, 1008 windows, 0.00% <unk>
+ obama:   5549 tokens, 173 windows, 1.93% <unk>
+ wbush:   4795 tokens, 149 windows, 2.13% <unk>
+ hbush:   4778 tokens, 149 windows, 2.13% <unk>
+Number of parameters in the decoder: 847,634
+ iter  batch loss   ppl train   ppl obama   ppl wbush   ppl hbush
+    0                 5753.52     5782.63     5772.40     5763.40
+  100      6.1138      481.18      575.50      665.30      592.99
+  200      5.4459      214.84      360.09      450.29      382.12
+  300      4.7846      129.68      312.29      414.75      342.55
+  400      4.6277       90.94      304.11      436.83      345.64
+  500      4.2110       66.81      319.47      471.23      365.71
+Training time: 40.1s
+Final perplexity: train 66.81, obama 319.47, wbush 471.23, hbush 365.71
+
+Test loss on tokens never seen in train_LM.txt vs the other tokens (nats/token):
+          test set  unseen tokens  loss unseen  loss others  share of total loss
+      Barack Obama          7.37%        12.36         5.24                15.8%
+    George W. Bush          9.40%        12.43         5.50                19.0%
+ George H. W. Bush          8.22%        12.37         5.32                17.2%
+
+Attention statistics of the trained decoder on test_LM_obama.txt:
+layer head  norm. entropy  max weight    self  previous   first
+    1    1          0.962       0.167   0.082     0.114   0.102
+    1    2          0.958       0.175   0.078     0.114   0.099
+    2    1          0.935       0.199   0.086     0.103   0.101
+    2    2          0.913       0.216   0.082     0.103   0.101
+    3    1          0.959       0.170   0.098     0.097   0.098
+    3    2          0.948       0.176   0.113     0.095   0.090
+    4    1          0.977       0.151   0.092     0.100   0.100
+    4    2          0.970       0.157   0.101     0.098   0.096
+(uniform attention over the visible keys would give entropy 1.000 and about 0.099 for each of the weight columns)
+
+Sanity check, sentence 1: 'It depends on us, on the choices we make, particularly at certain inflection points in history.'
+Input tensor shape: torch.Size([1, 32])
+Number of attention maps: 8
+Normalization test passed: every row of all 8 attention maps sums to 1
+Saved all heads of all layers to plots_extra\part2_decoder_attention_s1.png
+
+Sanity check, sentence 2: 'We will not tire, we will not falter, and we will not fail.'
+Input tensor shape: torch.Size([1, 32])
+Number of attention maps: 8
+Normalization test passed: every row of all 8 attention maps sums to 1
+Saved all heads of all layers to plots_extra\part2_decoder_attention_s2.png
